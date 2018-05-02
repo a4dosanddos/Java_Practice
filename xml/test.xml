@@ -1,3 +1,9 @@
-<Element>
-<test1>hoge</test1>
-</Element>
+<Test>
+  <!-- commet -->
+  <aaa bbb="foo1" ccc="foo2">barA</aaa>
+  <ddd>barD</ddd>
+  <eee />
+  <fff>
+    <ggg>barG</ggg>
+  </fff>
+</Test>

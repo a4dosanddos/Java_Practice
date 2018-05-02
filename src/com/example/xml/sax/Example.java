@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -14,32 +16,48 @@ public class Example {
 	public static void main(String[] args) {
 
 		InputStream xmlStream = getStream(readFile("xml/test.xml"));
-
+		XMLStreamReader xmlr = null;
 		try {
 			XMLInputFactory xmlif = XMLInputFactory.newInstance();
-			XMLStreamReader xmlr = xmlif.createXMLStreamReader(xmlStream);
+			xmlr = xmlif.createXMLStreamReader(xmlStream);
 
 			while (xmlr.hasNext()) {
 				switch (xmlr.getEventType()) {
 				case XMLStreamConstants.START_ELEMENT:
-					System.out.println("element");
-					System.out.println(xmlr.getLocalName());
-				case XMLStreamConstants.ATTRIBUTE:
-					System.out.println("attribute");
-					System.out.println(xmlr.getAttributeLocalName(0));
+					String localName = xmlr.getLocalName();
+					List<String> attrLocalNames = new ArrayList<>();
+					List<String> attrValues = new ArrayList<>();
+					for(int i = 0; i < xmlr.getAttributeCount(); i++) {
+						attrLocalNames.add(xmlr.getAttributeLocalName(i));
+						attrValues.add(xmlr.getAttributeValue(i));
+					}
+					System.out.println("=====");
+					System.out.println(localName);
+					System.out.println(attrLocalNames);
+					System.out.println(attrValues);
+					break;
 				case XMLStreamConstants.CHARACTERS:
-					System.out.println("characters");
 					System.out.println(new String(xmlr.getTextCharacters(), xmlr.getTextStart(), xmlr.getTextLength()));
+					break;
 				case XMLStreamConstants.SPACE:
-					System.out.println("space");
+					System.out.println("SPACE");
+					break;
+				case XMLStreamConstants.COMMENT:
+					System.out.println(xmlr.getText());
+					break;
 				default:
-					System.out.println("default");
 					break;
 				}
 				xmlr.next();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				xmlr.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
